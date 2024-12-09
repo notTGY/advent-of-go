@@ -7,8 +7,22 @@ import (
   "unicode"
 )
 
+func inGrid(
+  a [2]int, inc[2]int,
+  i, nrows, ncols int,
+) bool {
+  c := [2]int {
+    a[0] + inc[0]*i,
+    a[1] + inc[1]*i,
+  }
+  return c[0] >= 0 &&
+    c[0] < nrows &&
+    c[1] < ncols &&
+    c[1] >= 0
+}
+
 func main() {
-  data, _ := os.ReadFile("day8.input")
+  data, _ := os.ReadFile("day08.input")
   lines := strings.Split(string(data), "\n")
   lines = lines[:len(lines)-1]
 
@@ -40,17 +54,17 @@ func main() {
           continue
         }
 
-        c := [2]int {
-          2*a[0] - b[0],
-          2*a[1] - b[1],
+        inc := [2]int {
+          a[0] - b[0],
+          a[1] - b[1],
         }
-        if c[0] >= 0 &&
-          c[0] < nrows &&
-          c[1] >= 0 &&
-          c[1] < ncols {
+        for i := 0; inGrid(a, inc, i, nrows, ncols); i++ {
+          c := [2]int {
+            a[0] + inc[0]*i,
+            a[1] + inc[1]*i,
+          }
           antidotes = append(antidotes, c)
         }
-
       }
     }
   }

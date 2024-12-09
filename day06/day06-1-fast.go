@@ -110,7 +110,7 @@ func getReachable(
 
 func main() {
   start := time.Now()
-  ncols, nrows, obstacles, guard := getInputs("day6.input")
+  ncols, nrows, obstacles, guard := getInputs("day06.input")
   total := len(getReachable(ncols, nrows, obstacles, guard))
   fmt.Printf("took: %s; total: %d\n", time.Since(start), total)
 }

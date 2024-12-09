@@ -184,7 +184,7 @@ func isLoop(
 
 func main() {
   start := time.Now()
-  ncols, nrows, obstacles, guard := getInputs("day6.input")
+  ncols, nrows, obstacles, guard := getInputs("day06.input")
   reachable := getReachable(ncols, nrows, obstacles, guard)
 
   total := 0
@@ -208,5 +208,3 @@ func main() {
 
   fmt.Printf("took: %s; total: %d\n", time.Since(start), total)
 }
-
-// 1911 - maybe right? it is right, huh???

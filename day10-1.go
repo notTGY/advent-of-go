@@ -4,16 +4,13 @@ import (
   "fmt"
   "os"
   "strings"
-  "unicode"
+  "strconv"
 )
 
 func main() {
-  data, _ := os.ReadFile("day9.test")
+  data, _ := os.ReadFile("day10.test")
   lines := strings.Split(string(data), "\n")
   lines = lines[:len(lines)-1]
-
-  nrows := len(lines)
-  ncols := len(lines[0])
 
   total := 0
 

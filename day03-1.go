@@ -15,7 +15,7 @@ func abs(x, y int) (int) {
 }
 
 func main() {
-  data, _ := os.ReadFile("day3.test")
+  data, _ := os.ReadFile("day03.test")
 
   s := string(data)
 

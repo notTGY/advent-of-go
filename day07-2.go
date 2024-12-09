@@ -36,7 +36,7 @@ func canAssembe(r int, nums []int) bool {
 }
 
 func main() {
-  data, _ := os.ReadFile("day7.input")
+  data, _ := os.ReadFile("day07.input")
   lines := strings.Split(string(data), "\n")
   lines = lines[:len(lines)-1]
 

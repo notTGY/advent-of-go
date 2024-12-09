@@ -153,7 +153,7 @@ func (g V) Copy() ([2]int) {
 
 func main() {
   start := time.Now()
-  data, _ := os.ReadFile("day6.test")
+  data, _ := os.ReadFile("day06.test")
   lines := strings.Split(string(data), "\n")
   // extra whitespace in the end of file
   lines = lines[:len(lines)-1]
@@ -205,11 +205,5 @@ func main() {
   fmt.Printf("took: %s; total: %d\n", time.Since(start), total)
 }
 
-
-
-
-/// Binary search
-
 // 1733 -- too low
-
 // 1912 -- too high

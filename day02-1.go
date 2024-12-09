@@ -14,49 +14,20 @@ func abs(x, y int) (int) {
   return y - x
 }
 
-
-func isSafe(l []int) (int) {
-  if isSingleSafe(l, -1) == 1 {
-    return 1
-  }
-
-  for j, _ := range l {
-    if isSingleSafe(l, j) == 1 {
-      return 1
-    }
-  }
-
-  return 0
-}
-
-func isSingleSafe(levels []int, j int) (int) {
+func isSafe(levels []int) (int) {
   var isIncreasing bool
-  dir := false
   for i, x := range levels {
-    if i == j {
-      continue
-    }
     if i == 0 {
       continue
     }
-    if i == 1 && j == 0 {
-      continue
-    }
-    //fmt.Printf("%d %d \n", j, i)
 
-    pidx := i-1
-    if pidx == j {
-      pidx--
-    }
-
-    p := levels[pidx]
+    p := levels[i-1]
 
     if abs(x, p) > 3 || abs(x, p) < 1 {
       return 0
     }
-    if !dir {
+    if i == 1 {
       isIncreasing = x > p
-      dir = true
     } else {
       if isIncreasing != (x > p) {
         return 0
@@ -69,7 +40,7 @@ func isSingleSafe(levels []int, j int) (int) {
 const DEBUG = false
 
 func main() {
-  data, _ := os.ReadFile("day2.input")
+  data, _ := os.ReadFile("day02.input")
   if DEBUG {
     fmt.Printf("Read %d bytes\n", len(data))
   }

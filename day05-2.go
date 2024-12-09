@@ -145,7 +145,7 @@ func isCorrect(s string, rules []string) (int) {
 }
 
 func main() {
-  data, _ := os.ReadFile("day5.input")
+  data, _ := os.ReadFile("day05.input")
   parts := strings.Split(string(data), "\n\n")
   rules := strings.Split(parts[0], "\n")
   updates := strings.Split(parts[1], "\n")

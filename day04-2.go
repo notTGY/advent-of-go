@@ -120,7 +120,7 @@ func findDir(
 }
 
 func main() {
-  data, _ := os.ReadFile("day4.input")
+  data, _ := os.ReadFile("day04.input")
   lines := strings.Split(string(data), "\n")
   lines = lines[:len(lines)-1]
 

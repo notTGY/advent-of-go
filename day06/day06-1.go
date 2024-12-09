@@ -45,7 +45,7 @@ func getDir(d int) ([2]int) {
 
 func main() {
   start := time.Now()
-  data, _ := os.ReadFile("day6.input")
+  data, _ := os.ReadFile("day06.input")
   lines := strings.Split(string(data), "\n")
   // extra whitespace in the end of file
   lines = lines[:len(lines)-1]

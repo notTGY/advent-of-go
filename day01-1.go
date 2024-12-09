@@ -18,7 +18,7 @@ func abs(x, y int) (int) {
 const DEBUG = false
 
 func main() {
-  data, _ := os.ReadFile("day1.input")
+  data, _ := os.ReadFile("day01.input")
   if DEBUG {
     fmt.Printf("Read %d bytes\n", len(data))
   }
@@ -60,23 +60,11 @@ func main() {
   })
 
   total := 0
-  for _, a := range(arr1) {
-    d := 0
-    j, found := sort.Find(len(arr2), func(i int) int {
-      return a - arr2[i]
-    })
-
-    if found && arr2[j] == a {
-      d, _ = sort.Find(len(arr2) - j, func(i int) int {
-        return a+1 - arr2[j+i]
-      })
-    }
-
-    score := d * a
-    total += score
-    if DEBUG {
-      fmt.Printf("%d %d; %d\n", a, d, score)
-    }
+  for i, a := range(arr1) {
+    b := arr2[i]
+    d := abs(a, b)
+    total += d
+    fmt.Printf("%d %d; %d\n", a, b, d)
   }
 
   fmt.Printf("\ntotal: %d\n", total)
