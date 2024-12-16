@@ -180,7 +180,7 @@ func move(
 }
 
 func main() {
-	data, _ := os.ReadFile("day15.input")
+	data, _ := os.ReadFile("day15.test")
 	blocks := strings.Split(string(data), "\n\n")
   room_map := strings.Split(blocks[0], "\n")
   motions := strings.Split(blocks[1], "\n")
@@ -204,14 +204,19 @@ func main() {
     }
   }
 
-  DEBUG := false
+  DEBUG := true
   if DEBUG {
     fmt.Printf("Initial state:\n")
     printMap(robot, boxes, edges)
     fmt.Printf("\n")
   }
+
+  motion_group_loop:
   for _, motion_group := range motions {
-    for _, movement := range motion_group {
+    for i, movement := range motion_group {
+      if i > 2 {
+        break motion_group_loop
+      }
       switch movement {
         case '>':
           robot, boxes = move(
