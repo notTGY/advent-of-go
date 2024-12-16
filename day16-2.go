@@ -5,6 +5,10 @@ import (
 	"os"
 	"strings"
   "slices"
+
+	"image"
+	"image/color"
+	"image/png"
 )
 
 func print_tiles(
@@ -12,20 +16,49 @@ func print_tiles(
   costs [][]int,
   tiles [][2]int,
 ) {
+  block_size := 10
+
+	width := len(lines[0])*block_size
+	height := len(lines)*block_size
+	upLeft := image.Point{0, 0}
+	lowRight := image.Point{width, height}
+
+	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
+	cyan := color.RGBA{100, 200, 200, 0xff}
+	gray := color.RGBA{100, 100, 100, 0xff}
+	yellow := color.RGBA{200, 200, 100, 0xff}
+
   for row, line := range lines {
     for col, cell := range line {
-      if slices.IndexFunc(tiles, func (x [2]int) bool {
+      var cl color.Color = gray
+      if cell == 'S' || cell == 'E' {
+        cl = yellow
+        fmt.Printf("%s", string(cell))
+      } else if slices.IndexFunc(tiles, func (x [2]int) bool {
         return x[0] == col && x[1] == row
       }) != -1 {
         fmt.Printf("O")
+        cl = cyan
+      } else if cell == '#' {
+        cl = color.Black
+        fmt.Printf("%s", string(cell))
       } else if costs[row][col] != -1 {
         fmt.Printf(",")
       } else {
         fmt.Printf("%s", string(cell))
       }
+
+      for i := 0; i < block_size; i++ {
+        for j := 0; j < block_size; j++ {
+          img.Set(col*block_size+i, row*block_size+j, cl)
+        }
+      }
     }
     fmt.Printf("\n")
   }
+
+	f, _ := os.Create("day16.png")
+	png.Encode(f, img)
 }
 
 func get_input() ([]string) {
@@ -260,7 +293,7 @@ func djikstra (
 }
 
 func main() {
-	lines := get_test()
+	lines := get_input()
 
   end_pos := [2]int{ -1, -1 }
   start_pos := [2]int{ -1, -1 }
