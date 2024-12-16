@@ -57,13 +57,22 @@ func collider(
   if obj[1] != box[1] {
     return false
   }
-  intersect_1 := obj[0] == box[0] || obj[0] == box[0]+1
-  intersect_2 := obj[0]+1 == box[0] || obj[0]+1 == box[0]+1
-  if obj_size == 2 {
-    return intersect_1 || intersect_2
+  // obj - []
+  //       xy
+
+  // box - []
+  //       zw
+
+  xz := obj[0] == box[0]
+  xw := obj[0] == box[0]+1
+  yz := obj[0]+1 == box[0]
+  yw := obj[0]+1 == box[0]+1
+
+  if obj_size == 1 {
+    return xz || xw
   }
 
-  return intersect_1
+  return xz || xw || yz || yw
 }
 
 func canMove(
@@ -73,6 +82,7 @@ func canMove(
   inc int,
   axis int,
   obj_size int,
+  ignore []int,
 ) (bool, []int) {
   relevant := []int{}
 
@@ -92,6 +102,10 @@ func canMove(
 
   colliding := []int{}
   for i, box := range boxes {
+    if slices.Index(ignore, i) != -1 {
+      continue
+    }
+
     collides := collider(
       new_obj,
       box,
@@ -108,13 +122,16 @@ func canMove(
 
   for _, i := range colliding {
     box := boxes[i]
-    boxes_wo := [][2]int{}
-    for j, box := range boxes {
-      if i != j {
-        boxes_wo = append(boxes_wo, box)
-      }
-    }
-    can, rel := canMove(box, boxes_wo, edges, inc, axis, 2)
+
+    can, rel := canMove(
+      box,
+      boxes,
+      edges,
+      inc,
+      axis,
+      2,
+      append(ignore, i),
+    )
     if !can {
       return false, relevant
     }
@@ -142,11 +159,13 @@ func move(
     inc,
     axis,
     1,
+    []int{},
   )
   if !can {
     return robot, boxes
   }
   //fmt.Printf("relevant: %d\n", len(relevant))
+
   var new_boxes [][2]int
   for _, box := range boxes {
     new_box := [2]int { box[0], box[1] }
@@ -161,7 +180,7 @@ func move(
 }
 
 func main() {
-	data, _ := os.ReadFile("day15.test")
+	data, _ := os.ReadFile("day15.input")
 	blocks := strings.Split(string(data), "\n\n")
   room_map := strings.Split(blocks[0], "\n")
   motions := strings.Split(blocks[1], "\n")
@@ -185,7 +204,7 @@ func main() {
     }
   }
 
-  DEBUG := true
+  DEBUG := false
   if DEBUG {
     fmt.Printf("Initial state:\n")
     printMap(robot, boxes, edges)
