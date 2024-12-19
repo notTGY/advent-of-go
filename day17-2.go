@@ -43,16 +43,16 @@ func disassemble(program []int) {
       op == "cdv" {
       switch program[i+1] {
         case 4:
-          fmt.Printf("%d: %s A\n", i, op)
+          fmt.Printf("%2d: %s A\n", i, op)
         case 5:
-          fmt.Printf("%d: %s B\n", i, op)
+          fmt.Printf("%2d: %s B\n", i, op)
         case 6:
-          fmt.Printf("%d: %s C\n", i, op)
+          fmt.Printf("%2d: %s C\n", i, op)
         default:
-          fmt.Printf("%d: %s %d\n", i, op, program[i+1])
+          fmt.Printf("%2d: %s %d\n", i, op, program[i+1])
       }
     } else {
-      fmt.Printf("%d: %s %d\n", i, op, program[i+1])
+      fmt.Printf("%2d: %s %d\n", i, op, program[i+1])
     }
   }
   fmt.Printf("====---====\n")
