@@ -16,6 +16,7 @@ func print_tiles(
   lines []string,
   costs [][]int,
   tiles [][2]int,
+  cheat [][2]int,
 ) {
   block_size := 10
 
@@ -28,6 +29,7 @@ func print_tiles(
 	cyan := color.RGBA{100, 200, 200, 0xff}
 	gray := color.RGBA{100, 100, 100, 0xff}
 	yellow := color.RGBA{200, 200, 100, 0xff}
+	red := color.RGBA{200, 100, 100, 0xff}
 
   for row, line := range lines {
     for col, cell := range line {
@@ -35,10 +37,15 @@ func print_tiles(
       if cell == 'S' || cell == 'E' {
         cl = yellow
         fmt.Printf(" %s", string(cell))
+      } else if slices.IndexFunc(cheat, func (x [2]int) bool {
+        return x[0] == col && x[1] == row
+      }) != -1{
+        fmt.Printf(" C")
+        cl = red
       } else if slices.IndexFunc(tiles, func (x [2]int) bool {
         return x[0] == col && x[1] == row
       }) != -1 {
-        fmt.Printf("O")
+        fmt.Printf(" O")
         cl = cyan
       } else if cell == '#' {
         cl = color.Black
@@ -133,7 +140,6 @@ func get_cost(
 func djikstra (
   lines []string,
   start_pos [2]int,
-  end_pos [2]int,
 ) ([][]int) {
   costs := [][]int{}
 
@@ -290,20 +296,19 @@ func findCheats(
   lines []string,
   start_pos [2]int,
   end_pos [2]int,
-) int {
+) (int, map[int][][2]int) {
   costs_forward := djikstra(
     lines,
     start_pos,
-    end_pos,
   )
   total_cost := costs_forward[end_pos[1]][end_pos[0]]
 
   costs_backward := djikstra(
     lines,
     end_pos,
-    start_pos,
   )
 
+  cheats := make(map[int][][2]int)
   saves := make(map[int]int)
   total := 0
   for row, line := range lines {
@@ -319,6 +324,10 @@ func findCheats(
 
       for i, cheat_end := range neighbours {
         cheat_len := ls[i]
+        // REMOVE this to get solution
+        if cheat_len != 2 {
+          continue
+        }
         cost_bw := costs_backward[cheat_end[1]][cheat_end[0]]
 
         save := total_cost - (cost_fw + cost_bw + cheat_len)
@@ -327,6 +336,10 @@ func findCheats(
           _, ok := saves[save]
           if !ok {
             saves[save] = 0
+            cheats[save] = [][2]int{
+              pos,
+              cheat_end,
+            }
           }
           saves[save]++
         }
@@ -336,21 +349,105 @@ func findCheats(
   }
 
   for key, value := range saves {
-    //fmt.Printf("%d: %d\n", key, value)
+    fmt.Printf("%d: %d\n", key, value)
 
     if key >= 100 {
       total += value
     }
   }
 
-  return total
+  return total, cheats
+}
+
+func backprop(
+  lines []string,
+  costs [][]int,
+  pos [2]int,
+  target [2]int,
+) [][2]int {
+  tiles := [][2]int{}
+
+  total := costs[target[1]][target[0]]
+
+  for row, line := range lines {
+    for col, cell := range line {
+      if cell == '#' {
+        continue
+      }
+
+      c := costs[row][col]
+      temp_costs := djikstra(
+        lines,
+        [2]int{col, row},
+      )
+      c_bw := temp_costs[target[1]][target[0]]
+      /*
+      c_bw := costs_backwards[row][col]
+      */
+
+      path := c + c_bw
+      if path == total {
+        tiles = append(tiles, [2]int{col, row})
+      }
+    }
+  }
+
+  return tiles
 }
 
 func main() {
   start := time.Now()
 	lines, start_pos, end_pos := get_input()
 
-  total := findCheats(lines, start_pos, end_pos)
+  total, cheats := findCheats(lines, start_pos, end_pos)
+
+  m := -1
+  cheat := [][2]int{}
+  for key, value := range cheats {
+    if key > m {
+      m = key
+      cheat = value
+    }
+  }
+  if len(cheat) != 2 {
+    fmt.Printf("No cheats")
+    return
+  }
+  cheat_start := cheat[0]
+  cheat_end := cheat[1]
+
+  costs_start := djikstra(
+    lines,
+    start_pos,
+  )
+  costs_cheat := djikstra(
+    lines,
+    cheat_end,
+  )
+
+  tiles_0 := backprop(
+    lines,
+    costs_start,
+    start_pos,
+    cheat_start,
+  )
+
+  tiles_1 := backprop(
+    lines,
+    costs_cheat,
+    cheat_end,
+    end_pos,
+  )
+
+  tiles := append(tiles_0, tiles_1...)
+
+  print_tiles(
+    lines,
+    costs_start,
+    tiles,
+    cheat,
+  )
+
 
   fmt.Printf("took: %s; total: %d\n", time.Since(start), total)
 }
